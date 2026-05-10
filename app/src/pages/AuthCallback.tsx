@@ -12,7 +12,6 @@ export default function AuthCallback() {
     const run = async () => {
       const params = new URLSearchParams(window.location.search)
       const code = params.get('code')
-      const stateParam = params.get('state')
       const error = params.get('error')
 
       if (error || !code) {
@@ -22,11 +21,6 @@ export default function AuthCallback() {
       }
 
       try {
-        let _campaignId: string | undefined
-        if (stateParam) {
-          try { _campaignId = JSON.parse(atob(stateParam)).campaignId } catch {}
-        }
-
         const fingerprintHash = await getVisitorId()
         const redirectUri = `${window.location.origin}/auth/callback`
 
