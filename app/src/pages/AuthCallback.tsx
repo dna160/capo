@@ -22,9 +22,9 @@ export default function AuthCallback() {
       }
 
       try {
-        let campaignId: string | undefined
+        let _campaignId: string | undefined
         if (stateParam) {
-          try { campaignId = JSON.parse(atob(stateParam)).campaignId } catch {}
+          try { _campaignId = JSON.parse(atob(stateParam)).campaignId } catch {}
         }
 
         const fingerprintHash = await getVisitorId()

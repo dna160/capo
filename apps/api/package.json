@@ -10,6 +10,9 @@
     "start": "node dist/index.js",
     "db:seed-admin": "tsx src/scripts/seed-admin.ts"
   },
+  "prisma": {
+    "schema": "../../packages/db/prisma/schema.prisma"
+  },
   "dependencies": {
     "@fastify/cors": "^9.0.1",
     "@fastify/jwt": "^8.0.1",

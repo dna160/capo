@@ -1,7 +1,10 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "buildCommand": "pnpm install && pnpm --filter dashboard build && cp -r apps/dashboard/.next/static apps/dashboard/.next/standalone/.next/static"
+  },
   "deploy": {
-    "startCommand": "HOSTNAME=0.0.0.0 node .next/standalone/server.js",
+    "startCommand": "HOSTNAME=0.0.0.0 node apps/dashboard/.next/standalone/server.js",
     "healthcheckPath": "/",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE"

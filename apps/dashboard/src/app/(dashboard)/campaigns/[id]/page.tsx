@@ -424,7 +424,7 @@ function LuckyDrawTab({ campaignId }: { campaignId: string }) {
         </div>
       </div>
 
-      {result && (
+      {Boolean(result) && (
         <div className="bg-card border border-border rounded-lg p-4">
           <pre className="text-xs font-mono text-muted-foreground overflow-x-auto">{JSON.stringify(result, null, 2)}</pre>
         </div>
