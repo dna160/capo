@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "serve dist --listen $PORT"
+    "start": "serve -s dist -l $PORT"
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^4.5.1",
