@@ -30,7 +30,7 @@ export async function exchangeGoogleCode(code: string, redirectUri: string): Pro
     throw new Error('Failed to exchange Google auth code')
   }
 
-  const tokens: GoogleTokenResponse = await tokenRes.json()
+  const tokens = await tokenRes.json() as GoogleTokenResponse
 
   const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
     headers: { Authorization: `Bearer ${tokens.access_token}` },
@@ -40,5 +40,5 @@ export async function exchangeGoogleCode(code: string, redirectUri: string): Pro
     throw new Error('Failed to fetch Google user info')
   }
 
-  return userRes.json()
+  return userRes.json() as Promise<GoogleUserInfo>
 }

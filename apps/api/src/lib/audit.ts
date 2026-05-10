@@ -1,6 +1,6 @@
 import { prisma } from './prisma.js'
 import { hashIp } from './crypto.js'
-import { ActorType } from '@prisma/client'
+import { ActorType, Prisma } from '@prisma/client'
 
 interface AuditPayload {
   actorId: string
@@ -18,7 +18,7 @@ export async function writeAudit(data: AuditPayload): Promise<void> {
       actor_type: data.actorType,
       event_type: data.eventType,
       campaign_id: data.campaignId,
-      payload: data.payload,
+      payload: data.payload as Prisma.InputJsonValue,
       ip_address: hashIp(data.ip),
     },
   })
