@@ -1,0 +1,409 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 187 100% 50%;
+    --secondary: 56 97% 52%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 33%;
+    --accent: 187 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 300 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 0%;
+    --input: 0 0% 0%;
+    --ring: 187 100% 50%;
+    --radius: 0px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #FFFFFF;
+    color: #000000;
+    font-family: 'Space Mono', ui-monospace, monospace;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: #00F2FF;
+    color: #000000;
+  }
+
+  button, input, textarea, select {
+    border-radius: 0 !important;
+  }
+}
+
+/* ===== COMIC PANEL SYSTEM ===== */
+.comic-panel {
+  border: 4px solid #000;
+  background: #FFF;
+  position: relative;
+  overflow: hidden;
+}
+
+.comic-panel-dark {
+  border: 4px solid #000;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== GLITCH TRANSITION ===== */
+.transition-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.transition-container.active {
+  pointer-events: all;
+  opacity: 1;
+}
+
+.glitch-col {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+.glitch-col::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(255, 0, 255, 0.05) 2px,
+    rgba(255, 0, 255, 0.05) 4px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.glitch-img {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-size: cover;
+  background-position: center;
+  will-change: transform, opacity;
+}
+
+/* ===== MATRIX DOT ===== */
+.matrix-dot {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  transition: background-color 0.05s, box-shadow 0.05s;
+}
+
+/* ===== IMPACT TEXT ===== */
+.impact-text {
+  font-family: Impact, 'Anton', 'Haettenschweiler', 'Arial Narrow Bold', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+}
+
+/* ===== PRODUCT PANEL ===== */
+.product-panel {
+  transition: transform 0.15s ease-out;
+}
+
+.product-panel:hover {
+  transform: skew(-3deg) scale(1.02);
+}
+
+/* ===== HERO SECTION ===== */
+.hero-section {
+  min-height: 100vh;
+  display: grid;
+  border: 4px solid #000;
+  overflow: hidden;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr;
+}
+
+.hero-canvas {
+  position: relative;
+  background: #000;
+  overflow: hidden;
+  border-right: 4px solid #000;
+  min-height: 100vh;
+}
+
+.hero-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+}
+
+.canvas-overlay {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 10;
+}
+
+.canvas-overlay p {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: #00F2FF;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.hero-sidebar {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  background: #FFF;
+  min-height: 0;
+}
+
+.hero-status {
+  border-bottom: 4px solid #000;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hero-status span {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: 'Space Mono', monospace;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #00F2FF;
+  display: block;
+}
+
+.hero-logo {
+  padding: 24px;
+  border-bottom: 4px solid #000;
+}
+
+.hero-logo h1 {
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 0.9;
+  color: #000;
+}
+
+.hero-tagline {
+  padding: 24px;
+  border-bottom: 4px solid #000;
+}
+
+.hero-tagline p {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.hero-cta-wrap {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.hero-cta-btn {
+  width: 100%;
+  padding: 16px 24px;
+  background: #000;
+  color: #00F2FF;
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: clamp(14px, 3vw, 18px);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 4px solid #000;
+  cursor: pointer;
+  transition: none;
+}
+
+.hero-cta-btn:hover {
+  background: #00F2FF;
+  color: #000;
+}
+
+/* ===== PRODUCT GRID ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.product-grid > .product-cell {
+  border-right: 4px solid #000;
+}
+
+.product-grid > .product-cell:last-child {
+  border-right: none;
+}
+
+/* ===== FOOTER ===== */
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.footer-col {
+  border-right: 4px solid #333;
+}
+
+.footer-col:last-child {
+  border-right: none;
+}
+
+.footer-bottom {
+  border-top: 4px solid #333;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ===== REDEMPTION TERMINAL ===== */
+.terminal-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  position: relative;
+}
+
+.campaign-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.campaign-cell {
+  border-right: 4px solid #000;
+}
+
+.campaign-cell:last-child {
+  border-right: none;
+}
+
+/* ===== RESPONSIVE: MOBILE (< 768px) ===== */
+@media (max-width: 768px) {
+  .hero-section {
+    grid-template-columns: 1fr;
+    grid-template-rows: 45vh auto;
+  }
+
+  .hero-canvas {
+    border-right: none;
+    border-bottom: 4px solid #000;
+    min-height: 45vh;
+  }
+
+  .hero-logo h1 {
+    font-size: clamp(36px, 14vw, 64px);
+  }
+
+  .hero-cta-btn {
+    font-size: 14px;
+    padding: 14px 20px;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-grid > .product-cell {
+    border-right: none;
+    border-bottom: 4px solid #000;
+  }
+
+  .product-grid > .product-cell:last-child {
+    border-bottom: none;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-col {
+    border-right: none;
+    border-bottom: 4px solid #333;
+    padding: 24px 16px;
+  }
+
+  .footer-col:last-child {
+    border-bottom: none;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    padding: 12px 16px;
+  }
+
+  .terminal-body {
+    padding: 32px 12px;
+  }
+
+  .campaign-info {
+    grid-template-columns: 1fr;
+  }
+
+  .campaign-cell {
+    border-right: none;
+    border-bottom: 2px solid #000;
+  }
+
+  .campaign-cell:last-child {
+    border-bottom: none;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.blink-cursor::after {
+  content: "_";
+  animation: blink 1s step-end infinite;
+  color: #00F2FF;
+}

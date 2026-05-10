@@ -1,0 +1,25 @@
+{
+  "name": "storytellers-o2o-engine",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Storytellers Creative Solutions — O2O IP Redemption Platform",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "dev:api": "pnpm --filter api dev",
+    "dev:web": "pnpm --filter app dev",
+    "dev:dashboard": "pnpm --filter dashboard dev",
+    "build:api": "pnpm --filter api build",
+    "build:web": "pnpm --filter app build",
+    "build:dashboard": "pnpm --filter dashboard build",
+    "db:generate": "pnpm --filter @o2o/db generate",
+    "db:migrate": "pnpm --filter @o2o/db migrate",
+    "db:push": "pnpm --filter @o2o/db push",
+    "db:studio": "pnpm --filter @o2o/db studio"
+  },
+  "devDependencies": {
+    "typescript": "~5.5.0"
+  }
+}

@@ -1,0 +1,23 @@
+export { PrismaClient } from '@prisma/client'
+export type {
+  Campaign,
+  User,
+  FingerprintRecord,
+  CodeVault,
+  Redemption,
+  BatchMapping,
+  AuditLog,
+  AdminAccount,
+  AdminCampaignScope,
+  CampaignRewardConfig,
+  UserCampaignProgress,
+  TierRewardIssuance,
+  LuckyDrawEntry,
+  LuckyDrawResult,
+  GameType,
+  CampaignStatus,
+  OAuthProvider,
+  ActorType,
+  RewardTier,
+  AdminRole,
+} from '@prisma/client'

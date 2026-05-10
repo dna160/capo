@@ -1,0 +1,284 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum GameType {
+  GENSHIN
+  WUWA
+  MONSTER_HUNTER
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+enum OAuthProvider {
+  GOOGLE
+  WHATSAPP
+}
+
+enum ActorType {
+  CONSUMER
+  ADMIN
+  SYSTEM
+}
+
+enum RewardTier {
+  STANDARD
+  TIER_1
+  TIER_2
+  TIER_3
+  VARIETY
+}
+
+enum AdminRole {
+  ADMIN
+  BRAND
+  IP_HOLDER
+}
+
+// ─── Core Models ──────────────────────────────────────────────────────────────
+
+model Campaign {
+  id              String         @id @default(uuid())
+  campaign_name   String
+  ip_holder_name  String
+  game_type       GameType
+  start_date      DateTime
+  end_date        DateTime
+  max_per_user    Int            @default(1)
+  vault_watermark Int            @default(500)
+  status          CampaignStatus @default(DRAFT)
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
+  deleted_at      DateTime?
+
+  vault            CodeVault[]
+  redemptions      Redemption[]
+  batchMaps        BatchMapping[]
+  auditLogs        AuditLog[]
+  rewardConfig     CampaignRewardConfig?
+  userProgress     UserCampaignProgress[]
+  tierIssuances    TierRewardIssuance[]
+  luckyDrawEntries LuckyDrawEntry[]
+  luckyDrawResult  LuckyDrawResult?
+  adminScopes      AdminCampaignScope[]
+}
+
+model User {
+  id           String        @id @default(cuid())
+  social_id    String        @unique
+  provider     OAuthProvider
+  email        String?
+  phone        String?
+  display_name String?
+  created_at   DateTime      @default(now())
+  deleted_at   DateTime?
+
+  fingerprints     FingerprintRecord[]
+  redemptions      Redemption[]
+  progress         UserCampaignProgress[]
+  tierIssuances    TierRewardIssuance[]
+  luckyDrawEntries LuckyDrawEntry[]
+}
+
+model FingerprintRecord {
+  id               String   @id @default(cuid())
+  user_id          String
+  fingerprint_hash String   @unique
+  first_seen_at    DateTime @default(now())
+  last_seen_at     DateTime @updatedAt
+  risk_flag        Boolean  @default(false)
+
+  user User @relation(fields: [user_id], references: [id])
+}
+
+model CodeVault {
+  id          String     @id @default(uuid())
+  campaign_id String
+  game_code   String     @unique
+  reward_tier RewardTier @default(STANDARD)
+  is_spent    Boolean    @default(false)
+  assigned_to String?
+  uploaded_at DateTime   @default(now())
+  spent_at    DateTime?
+
+  campaign Campaign            @relation(fields: [campaign_id], references: [id])
+  issuance TierRewardIssuance?
+
+  @@index([campaign_id, reward_tier, is_spent])
+}
+
+model Redemption {
+  id               String   @id @default(cuid())
+  campaign_id      String
+  carton_uid       String   @unique
+  user_id          String
+  fingerprint_hash String
+  ip_code_issued   String
+  batch_id         String
+  district_name    String
+  city             String
+  sku_code         String?
+  created_at       DateTime @default(now())
+
+  campaign       Campaign            @relation(fields: [campaign_id], references: [id])
+  user           User                @relation(fields: [user_id], references: [id])
+  luckyDrawEntry LuckyDrawEntry?
+  tierIssuance   TierRewardIssuance?
+
+  @@index([campaign_id, created_at])
+  @@index([user_id, campaign_id])
+}
+
+model BatchMapping {
+  id            Int    @id @default(autoincrement())
+  campaign_id   String
+  serial_start  BigInt
+  serial_end    BigInt
+  district_name String
+  city          String
+  province      String
+  batch_label   String
+
+  campaign Campaign @relation(fields: [campaign_id], references: [id])
+
+  @@index([campaign_id])
+}
+
+model AuditLog {
+  id          String    @id @default(cuid())
+  actor_id    String
+  actor_type  ActorType
+  event_type  String
+  campaign_id String?
+  payload     Json
+  ip_address  String
+  created_at  DateTime  @default(now())
+
+  campaign Campaign? @relation(fields: [campaign_id], references: [id])
+
+  @@index([campaign_id, created_at])
+  @@index([event_type, created_at])
+}
+
+// ─── Admin Accounts ───────────────────────────────────────────────────────────
+
+model AdminAccount {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password_hash String
+  display_name  String
+  role          AdminRole
+  created_at    DateTime  @default(now())
+  deleted_at    DateTime?
+
+  scopes AdminCampaignScope[]
+}
+
+model AdminCampaignScope {
+  id          String @id @default(cuid())
+  admin_id    String
+  campaign_id String
+
+  admin    AdminAccount @relation(fields: [admin_id], references: [id])
+  campaign Campaign     @relation(fields: [campaign_id], references: [id])
+
+  @@unique([admin_id, campaign_id])
+}
+
+// ─── Addendum A: Multi-Tier & Variety Reward System ──────────────────────────
+
+model CampaignRewardConfig {
+  id                     String    @id @default(cuid())
+  campaign_id            String    @unique
+  tier1_threshold        Int
+  tier2_threshold        Int
+  tier3_threshold        Int
+  variety_skus_required  String[]
+  lucky_draw_enabled     Boolean   @default(true)
+  lucky_draw_prize_label String?
+  created_at             DateTime  @default(now())
+  locked_at              DateTime?
+
+  campaign Campaign @relation(fields: [campaign_id], references: [id])
+}
+
+model UserCampaignProgress {
+  id                 String   @id @default(cuid())
+  campaign_id        String
+  user_id            String
+  total_scans        Int      @default(0)
+  tier1_rewarded     Boolean  @default(false)
+  tier2_rewarded     Boolean  @default(false)
+  tier3_rewarded     Boolean  @default(false)
+  scanned_skus       String[]
+  variety_rewarded   Boolean  @default(false)
+  lucky_draw_entries Int      @default(0)
+  updated_at         DateTime @updatedAt
+
+  campaign Campaign @relation(fields: [campaign_id], references: [id])
+  user     User     @relation(fields: [user_id], references: [id])
+
+  @@unique([campaign_id, user_id])
+  @@index([campaign_id, user_id])
+}
+
+model TierRewardIssuance {
+  id                    String     @id @default(cuid())
+  campaign_id           String
+  user_id               String
+  tier                  RewardTier
+  code_vault_id         String     @unique
+  trigger_scan_count    Int
+  trigger_redemption_id String     @unique
+  issued_at             DateTime   @default(now())
+
+  campaign   Campaign   @relation(fields: [campaign_id], references: [id])
+  user       User       @relation(fields: [user_id], references: [id])
+  codeVault  CodeVault  @relation(fields: [code_vault_id], references: [id])
+  redemption Redemption @relation(fields: [trigger_redemption_id], references: [id])
+
+  @@unique([campaign_id, user_id, tier])
+}
+
+model LuckyDrawEntry {
+  id            String   @id @default(cuid())
+  campaign_id   String
+  user_id       String
+  redemption_id String   @unique
+  sku_code      String
+  entry_number  Int
+  created_at    DateTime @default(now())
+
+  campaign   Campaign   @relation(fields: [campaign_id], references: [id])
+  user       User       @relation(fields: [user_id], references: [id])
+  redemption Redemption @relation(fields: [redemption_id], references: [id])
+
+  @@index([campaign_id])
+  @@index([user_id, campaign_id])
+}
+
+model LuckyDrawResult {
+  id                 String   @id @default(cuid())
+  campaign_id        String   @unique
+  draw_seed          String
+  winner_user_ids    String[]
+  total_entries      Int
+  total_participants Int
+  executed_by        String
+  executed_at        DateTime @default(now())
+
+  campaign Campaign @relation(fields: [campaign_id], references: [id])
+}
