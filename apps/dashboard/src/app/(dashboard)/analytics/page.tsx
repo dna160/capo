@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import { campaignsApi, type Campaign } from '@/lib/api'
 import Link from 'next/link'
 import { formatNum } from '@/lib/utils'
-import { DEMO_CAMPAIGNS, DEMO_MAP_POINTS, type MapPoint } from '@/lib/demo-data'
+import { DEMO_CAMPAIGNS, KR_MAP_POINTS, type MapPoint } from '@/lib/demo-data'
 
 const RedemptionMap = dynamic(() => import('@/components/RedemptionMap'), { ssr: false })
 
@@ -38,7 +38,7 @@ export default function AnalyticsPage() {
       setIsDemo(!hasReal)
 
       if (!hasReal) {
-        setMapPoints(DEMO_MAP_POINTS)
+        setMapPoints(KR_MAP_POINTS)
       } else {
         const pts: MapPoint[] = list.flatMap((c) => {
           const city = Object.keys(CITY_COORDS).find((k) => c.campaign_name.includes(k))
@@ -48,7 +48,7 @@ export default function AnalyticsPage() {
         })
         const total = pts.reduce((s, p) => s + p.redemption_count, 0)
         pts.forEach((p) => { p.pct_of_total = total > 0 ? +((p.redemption_count / total) * 100).toFixed(1) : 0 })
-        setMapPoints(pts.length > 0 ? pts : DEMO_MAP_POINTS)
+        setMapPoints(pts.length > 0 ? pts : KR_MAP_POINTS)
       }
       setLoading(false)
     })
@@ -95,8 +95,9 @@ export default function AnalyticsPage() {
             <p className="text-xs text-muted-foreground">Click any circle to view district details · scroll to zoom</p>
           </div>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />High</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />Mid</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />Very High</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />High</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-violet-400 inline-block" />Medium</span>
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block" />Low</span>
           </div>
         </div>

@@ -37,19 +37,22 @@ export default function RedemptionMap({ points, height = 480 }: Props) {
       }).addTo(map)
 
       const max = Math.max(...points.map((p) => p.redemption_count), 1)
+      // Use sqrt scale so small kecamatan are still visible next to major hubs
+      const sqrtMax = Math.sqrt(max)
 
       points.forEach((point) => {
         const intensity = point.redemption_count / max
-        const radius = 8 + intensity * 38
-        const color = intensity > 0.6 ? '#ef4444' : intensity > 0.3 ? '#f59e0b' : '#3b82f6'
+        const sqrtIntensity = Math.sqrt(point.redemption_count) / sqrtMax
+        const radius = 5 + sqrtIntensity * 32
+        const color = intensity > 0.5 ? '#ef4444' : intensity > 0.15 ? '#f59e0b' : intensity > 0.04 ? '#a78bfa' : '#3b82f6'
 
         const circle = L.circleMarker([point.lat, point.lng], {
           radius,
           fillColor: color,
           color: color,
           weight: 1,
-          opacity: 0.3,
-          fillOpacity: 0.2 + intensity * 0.55,
+          opacity: 0.35,
+          fillOpacity: 0.15 + sqrtIntensity * 0.6,
         })
 
         circle.bindPopup(
@@ -73,9 +76,10 @@ export default function RedemptionMap({ points, height = 480 }: Props) {
         div.innerHTML = `
           <div style="background:rgba(15,23,42,0.9);padding:10px 14px;border-radius:6px;border:1px solid #1e293b;font-family:monospace;font-size:11px;color:#94a3b8">
             <div style="font-weight:700;color:#e2e8f0;margin-bottom:6px">Redemption Density</div>
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:12px;height:12px;border-radius:50%;background:#ef4444;display:inline-block"></span> High (&gt;60%)</div>
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:12px;height:12px;border-radius:50%;background:#f59e0b;display:inline-block"></span> Medium (30–60%)</div>
-            <div style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#3b82f6;display:inline-block"></span> Low (&lt;30%)</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:12px;height:12px;border-radius:50%;background:#ef4444;display:inline-block"></span> Very High (&gt;50%)</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:12px;height:12px;border-radius:50%;background:#f59e0b;display:inline-block"></span> High (15–50%)</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:12px;height:12px;border-radius:50%;background:#a78bfa;display:inline-block"></span> Medium (4–15%)</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#3b82f6;display:inline-block"></span> Low (&lt;4%)</div>
           </div>`
         return div
       }
