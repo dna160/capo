@@ -24,24 +24,33 @@ async function apiFetch<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<{ success: boolean; data: T | null; error: string | null }> {
-  const token = getToken()
-  const res = await fetch(`${BASE}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  })
-  if (!res.ok && res.status === 401) {
-    clearToken()
-    window.location.href = '/login'
+  try {
+    const token = getToken()
+    const res = await fetch(`${BASE}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options.headers,
+      },
+    })
+    if (res.status === 401) {
+      clearToken()
+      if (typeof window !== 'undefined') window.location.href = '/login'
+      return { success: false, data: null, error: 'Unauthorized' }
+    }
+    if (options.headers && (options.headers as Record<string, string>)['Accept'] === 'text/csv') {
+      const text = await res.text()
+      return { success: true, data: text as unknown as T, error: null }
+    }
+    const contentType = res.headers.get('content-type') ?? ''
+    if (!contentType.includes('application/json')) {
+      return { success: false, data: null, error: `API unavailable (${res.status})` }
+    }
+    return res.json()
+  } catch (err) {
+    return { success: false, data: null, error: err instanceof Error ? err.message : 'Network error' }
   }
-  if (options.headers && (options.headers as Record<string, string>)['Accept'] === 'text/csv') {
-    const text = await res.text()
-    return { success: true, data: text as unknown as T, error: null }
-  }
-  return res.json()
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
