@@ -3,6 +3,17 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { campaignsApi, type CreateCampaignInput } from '@/lib/api'
 
+const inputCls = 'w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">{label}</label>
+      {children}
+    </div>
+  )
+}
+
 export default function NewCampaignPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -21,6 +32,7 @@ export default function NewCampaignPage() {
   const set = (k: keyof CreateCampaignInput, v: unknown) => setForm((f) => ({ ...f, [k]: v }))
 
   const handleSubmit = async (e: React.FormEvent) => {
+
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -32,15 +44,6 @@ export default function NewCampaignPage() {
       setError(res.error ?? 'Failed to create campaign')
     }
   }
-
-  const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div>
-      <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">{label}</label>
-      {children}
-    </div>
-  )
-
-  const inputCls = 'w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
 
   return (
     <div className="p-6 max-w-2xl">
