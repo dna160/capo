@@ -3,6 +3,9 @@ import { MatrixDisplay } from '@/components/MatrixDisplay'
 import { GlitchTransition } from '@/components/GlitchTransition'
 import { api, getGoogleOAuthUrl, type RedeemResult } from '@/lib/api'
 import { getVisitorId } from '@/lib/fingerprint'
+import {
+  VAULT_STANDARD, VAULT_TIER1, VAULT_TIER2, VAULT_TIER3, VAULT_VARIETY, pickCode,
+} from '@/lib/demo-codes'
 
 type TerminalState = 'standby' | 'auth-required' | 'loading' | 'success' | 'error' | 'queued'
 
@@ -24,7 +27,6 @@ function parseQrParams(): QRParams | null {
 // ── Deterministic demo result generator ──────────────────────────────────────
 function buildDemoResult(code: string): RedeemResult & { isDemoMode?: boolean } {
   const seed = code.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
-  const rnd = (n = 8) => Math.random().toString(36).substring(2, 2 + n).toUpperCase()
 
   const skus = [
     { code: 'BC', label: 'BC – Gotchard Edition' },
@@ -53,19 +55,20 @@ function buildDemoResult(code: string): RedeemResult & { isDemoMode?: boolean } 
     new Set(Array.from({ length: Math.min(totalScans, 3) }, (_, i) => skus[(seed + i) % skus.length].code))
   )
 
+  // Draw from pre-populated vault pools using seed so same code → same codes
   const tierRewards: { tier: string; game_code: string }[] = []
-  if (tier1) tierRewards.push({ tier: 'TIER_1', game_code: `T1-KR-${rnd(6)}` })
-  if (tier2) tierRewards.push({ tier: 'TIER_2', game_code: `T2-KR-${rnd(6)}` })
-  if (tier3) tierRewards.push({ tier: 'TIER_3', game_code: `T3-KR-${rnd(6)}` })
+  if (tier1) tierRewards.push({ tier: 'TIER_1', game_code: pickCode(VAULT_TIER1, seed) })
+  if (tier2) tierRewards.push({ tier: 'TIER_2', game_code: pickCode(VAULT_TIER2, seed + 1) })
+  if (tier3) tierRewards.push({ tier: 'TIER_3', game_code: pickCode(VAULT_TIER3, seed + 2) })
 
   return {
     isDemoMode: true,
-    game_code: `KR-GOTCHARD-${rnd(8)}`,
+    game_code: pickCode(VAULT_STANDARD, seed),
     campaign_name: 'Ultra Milk × Kamen Rider: Gotchard',
     sku_resolved: sku.label,
     district_resolved: district,
     tier_rewards_issued: tierRewards,
-    variety_reward_issued: variety ? { game_code: `VAR-KR-${rnd(6)}` } : null,
+    variety_reward_issued: variety ? { game_code: pickCode(VAULT_VARIETY, seed) } : null,
     lucky_draw_entries_total: totalScans,
     progress: {
       total_scans: totalScans,
