@@ -184,6 +184,35 @@ export default function RedemptionTerminal() {
     }
   }
 
+  const handleDemoRedeem = () => {
+    const rnd = () => Math.random().toString(36).substring(2, 10).toUpperCase()
+    const demoResult: RedeemResult = {
+      game_code: `GNSHN-DEMO-${rnd()}`,
+      campaign_name: 'Ultra Milk × Genshin Impact [DEMO]',
+      sku_resolved: 'Karton Biru (BC)',
+      district_resolved: 'Jakarta Pusat',
+      tier_rewards_issued: [{ tier: 'TIER_1', game_code: `T1-${rnd()}` }],
+      variety_reward_issued: null,
+      lucky_draw_entries_total: 3,
+      progress: {
+        total_scans: 5,
+        tier1_rewarded: true,
+        tier2_rewarded: false,
+        tier3_rewarded: false,
+        variety_rewarded: false,
+        scanned_skus: ['BC', 'SB'],
+      },
+    }
+    addLog('> [DEMO] SIMULASI DIJALANKAN...')
+    addLog('> [DEMO] TIER 1 TERBUKA')
+    scrambleInterval.current = matrixInstance.current?.katakanaScramble(1200) || null
+    setTimeout(() => {
+      setRedeemResult(demoResult)
+      setTerminalState('success')
+      setStatusText('AKSES DIBERIKAN [DEMO]')
+    }, 1400)
+  }
+
   const handleManualAuthenticate = async () => {
     // Manual code mode: not a QR scan — for legacy voucher support
     if (manualCode.length < 4) {
@@ -372,6 +401,15 @@ export default function RedemptionTerminal() {
                 INSTRUKSI: Temukan QR code di balik penutup kemasan ULTRAMILK Anda. Scan QR code untuk menukarkan hadiah eksklusif.
               </p>
             </div>
+
+            {/* Demo mode button */}
+            <button
+              onClick={handleDemoRedeem}
+              disabled={terminalState === 'loading'}
+              style={{ width: '100%', maxWidth: '780px', marginTop: '8px', padding: '10px 24px', background: 'transparent', color: '#666', fontFamily: "'Space Mono', monospace", fontSize: 'clamp(9px, 2.5vw, 10px)', letterSpacing: '0.1em', textTransform: 'uppercase' as const, border: '2px dashed #333', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            >
+              <span style={{ opacity: 0.5 }}>[ DEMO ] SIMULASI HADIAH TANPA QR CODE</span>
+            </button>
           </>
         )}
 
