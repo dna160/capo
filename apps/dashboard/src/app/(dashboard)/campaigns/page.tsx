@@ -19,6 +19,7 @@ const GAME_LABEL: Record<string, string> = {
   GENSHIN: 'Genshin Impact',
   WUWA: 'Wuthering Waves',
   MONSTER_HUNTER: 'Monster Hunter',
+  KAMEN_RIDER: 'Kamen Rider',
 }
 
 export default function CampaignsPage() {

@@ -12,7 +12,9 @@ import {
 } from '@/lib/api'
 import { formatDate, formatNum, statusBg } from '@/lib/utils'
 import {
-  DEMO_SUMMARY, DEMO_TIMESERIES, DEMO_GEO, DEMO_VAULT, DEMO_FUNNEL, DEMO_MAP_POINTS, type MapPoint,
+  DEMO_SUMMARY, DEMO_TIMESERIES, DEMO_GEO, DEMO_VAULT, DEMO_FUNNEL, DEMO_MAP_POINTS,
+  KR_SUMMARY, KR_TIMESERIES, KR_GEO, KR_VAULT, KR_FUNNEL, KR_MAP_POINTS,
+  type MapPoint,
 } from '@/lib/demo-data'
 
 const RedemptionMap = dynamic(() => import('@/components/RedemptionMap'), { ssr: false })
@@ -203,6 +205,37 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
       setIsDemo(demo)
 
       if (demo) {
+        // Per-campaign demo datasets
+        if (id === 'demo-kamen-rider') {
+          setCampaign({
+            id,
+            campaign_name: 'Ultra Milk × Kamen Rider: Gotchard',
+            ip_holder_name: 'Toei Company',
+            game_type: 'KAMEN_RIDER',
+            status: 'ACTIVE',
+            start_date: '2026-02-01T00:00:00Z',
+            end_date: '2026-07-31T23:59:59Z',
+            created_at: '2026-01-10T00:00:00Z',
+            _count: { redemptions: 47_283, vault: 60_500 },
+            rewardConfig: {
+              tier1_threshold: 3,
+              tier2_threshold: 6,
+              tier3_threshold: 12,
+              variety_skus_required: ['BC', 'SB', 'FC'],
+              lucky_draw_enabled: true,
+              lucky_draw_prize_label: 'Signed Kamen Rider Gotchard Merchandise Bundle',
+            },
+          })
+          setSummary(KR_SUMMARY)
+          setTimeseries(KR_TIMESERIES)
+          setGeo(KR_GEO)
+          setMapPoints(KR_MAP_POINTS)
+          setVault(KR_VAULT)
+          setFunnel(KR_FUNNEL)
+          return
+        }
+
+        // Other generic demo campaigns
         const name = id === 'demo-genshin-q1' ? 'Ultra Milk × Genshin Impact Q1 2026'
           : id === 'demo-wuwa-launch' ? 'Ultra Milk × Wuthering Waves Launch'
           : 'Ultra Milk × Monster Hunter Wilds'
